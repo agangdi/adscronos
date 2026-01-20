@@ -1,0 +1,443 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.widget-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.widget-container.dark {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.widget-container.light {
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+.resource-list h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.resource-card {
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dark .resource-card {
+  border-color: #333;
+  background-color: #2a2a2a;
+}
+
+.light .resource-card {
+  border-color: #ddd;
+  background-color: #f9f9f9;
+}
+
+.resource-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resource-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.resource-card .category {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.resource-card .description {
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.resource-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-weight: 600;
+  color: #10b981;
+  font-size: 16px;
+}
+
+.access-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.access-btn:hover {
+  background-color: #2563eb;
+}
+
+.ad-viewer {
+  border: 1px solid;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dark .ad-viewer {
+  border-color: #333;
+  background-color: #2a2a2a;
+}
+
+.light .ad-viewer {
+  border-color: #ddd;
+  background-color: #f9f9f9;
+}
+
+.ad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid;
+}
+
+.dark .ad-header {
+  border-color: #333;
+}
+
+.light .ad-header {
+  border-color: #ddd;
+}
+
+.ad-timer {
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.ad-content {
+  height: 400px;
+  position: relative;
+}
+
+.ad-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.ad-footer {
+  padding: 16px;
+  border-top: 1px solid;
+}
+
+.dark .ad-footer {
+  border-color: #333;
+}
+
+.light .ad-footer {
+  border-color: #ddd;
+}
+
+.ad-notice {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #888;
+}
+
+.complete-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #10b981;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.complete-btn:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.complete-btn:disabled {
+  background-color: #6b7280;
+  cursor: not-allowed;
+}
+
+.payment-flow {
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.dark .payment-flow {
+  border-color: #333;
+  background-color: #2a2a2a;
+}
+
+.light .payment-flow {
+  border-color: #ddd;
+  background-color: #f9f9f9;
+}
+
+.payment-header h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.payment-description {
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.payment-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid;
+}
+
+.dark .detail-row {
+  border-color: #333;
+}
+
+.light .detail-row {
+  border-color: #eee;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 500;
+  color: #888;
+}
+
+.value {
+  font-weight: 600;
+}
+
+.price-highlight {
+  color: #10b981;
+  font-size: 18px;
+}
+
+.error-message {
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background-color: #fee;
+  color: #c00;
+  border: 1px solid #fcc;
+}
+
+.payment-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cancel-btn,
+.pay-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn {
+  background-color: #6b7280;
+  color: white;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.pay-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.pay-btn:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.pay-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.payment-notice {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+.content-viewer {
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.dark .content-viewer {
+  border-color: #333;
+  background-color: #2a2a2a;
+}
+
+.light .content-viewer {
+  border-color: #ddd;
+  background-color: #f9f9f9;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid;
+}
+
+.dark .content-header {
+  border-color: #333;
+}
+
+.light .content-header {
+  border-color: #ddd;
+}
+
+.content-header h2 {
+  font-size: 24px;
+}
+
+.payment-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: #10b981;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.badge-icon {
+  font-size: 16px;
+}
+
+.content-body {
+  margin-bottom: 24px;
+}
+
+.content-text {
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.payment-info {
+  padding: 16px;
+  border-radius: 6px;
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.payment-info h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.info-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.info-label {
+  color: #888;
+  font-size: 14px;
+}
+
+.info-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.info-value.link {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.info-value.link:hover {
+  text-decoration: underline;
+}
+
+.error-view {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-view h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: #ef4444;
+}
+
+.error-view p {
+  margin-bottom: 20px;
+  color: #888;
+}
+
+.error-view button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error-view button:hover {
+  background-color: #2563eb;
+}
