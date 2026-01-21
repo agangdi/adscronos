@@ -1,0 +1,342 @@
+openapi: 3.0.1
+info:
+  title: X402 Ad Platform ChatGPT Plugin
+  description: Access premium content through ad-supported paywall system
+  version: 'v1'
+servers:
+  - url: https://x402-platform.com
+paths:
+  /api/chatgpt/resources:
+    get:
+      operationId: listPremiumResources
+      summary: List available premium resources
+      parameters:
+        - name: category
+          in: query
+          description: Filter resources by category
+          required: false
+          schema:
+            type: string
+        - name: tags
+          in: query
+          description: Filter resources by tags (comma-separated)
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of resources to return
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        "200":
+          description: List of premium resources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resources:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PremiumResource'
+                  total:
+                    type: integer
+                  hasMore:
+                    type: boolean
+
+  /api/chatgpt/resources/{resourceId}:
+    get:
+      operationId: getPremiumResource
+      summary: Get premium resource content (requires ad completion)
+      parameters:
+        - name: resourceId
+          in: path
+          description: Unique identifier for the premium resource
+          required: true
+          schema:
+            type: string
+        - name: adSessionId
+          in: query
+          description: Ad session ID proving ad completion
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Premium resource content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceContent'
+        "402":
+          description: Payment required - ad must be viewed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdPaywallResponse'
+        "404":
+          description: Resource not found
+
+  /api/chatgpt/ads/session:
+    post:
+      operationId: createAdSession
+      summary: Create ad viewing session for resource access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resourceId:
+                  type: string
+                  description: ID of resource to unlock
+                userId:
+                  type: string
+                  description: ChatGPT user identifier
+              required:
+                - resourceId
+      responses:
+        "201":
+          description: Ad session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdSession'
+
+  /api/chatgpt/ads/complete:
+    post:
+      operationId: completeAdViewing
+      summary: Mark ad as viewed and process payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                  description: Ad session identifier
+                adId:
+                  type: string
+                  description: Advertisement identifier
+                viewDuration:
+                  type: integer
+                  description: Time spent viewing ad in seconds
+                interactionData:
+                  type: object
+                  description: Ad interaction metrics
+              required:
+                - sessionId
+                - adId
+                - viewDuration
+      responses:
+        "200":
+          description: Ad completion processed, payment authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdCompletionResponse'
+
+  /api/chatgpt/billing/usage:
+    get:
+      operationId: getUserUsage
+      summary: Get user's usage statistics and billing information
+      parameters:
+        - name: userId
+          in: query
+          description: ChatGPT user identifier
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          description: Time period for usage stats
+          required: false
+          schema:
+            type: string
+            enum: [day, week, month]
+            default: month
+      responses:
+        "200":
+          description: User usage and billing information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageStats'
+
+components:
+  schemas:
+    PremiumResource:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        adRequirement:
+          type: object
+          properties:
+            minViewDuration:
+              type: integer
+              description: Minimum ad viewing time in seconds
+            adType:
+              type: string
+              enum: [video, image, text, interactive]
+            cost:
+              type: number
+              description: Cost in USD to access this resource
+        previewContent:
+          type: string
+          description: Preview of the resource content
+        estimatedReadTime:
+          type: integer
+          description: Estimated reading time in minutes
+
+    ResourceContent:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+          description: Full premium content
+        format:
+          type: string
+          enum: [text, markdown, html, json]
+        metadata:
+          type: object
+        accessedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+          description: When access to this content expires
+
+    AdPaywallResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        adRequired:
+          type: boolean
+        adSession:
+          $ref: '#/components/schemas/AdSession'
+        estimatedCost:
+          type: number
+          description: Estimated cost in USD
+
+    AdSession:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        resourceId:
+          type: string
+        adId:
+          type: string
+        adContent:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [video, image, text, interactive]
+            url:
+              type: string
+            duration:
+              type: integer
+              description: Required viewing duration in seconds
+            title:
+              type: string
+            description:
+              type: string
+        expiresAt:
+          type: string
+          format: date-time
+        viewingUrl:
+          type: string
+          description: URL to view the advertisement
+
+    AdCompletionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        paymentProcessed:
+          type: boolean
+        resourceUnlocked:
+          type: boolean
+        accessToken:
+          type: string
+          description: Token to access the premium resource
+        billingAmount:
+          type: number
+          description: Amount charged in USD
+        transactionId:
+          type: string
+
+    UsageStats:
+      type: object
+      properties:
+        userId:
+          type: string
+        period:
+          type: string
+        resourcesAccessed:
+          type: integer
+        totalSpent:
+          type: number
+          description: Total amount spent in USD
+        adsViewed:
+          type: integer
+        averageViewDuration:
+          type: number
+          description: Average ad viewing time in seconds
+        topCategories:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              count:
+                type: integer
+        billingHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+              amount:
+                type: number
+              resourceTitle:
+                type: string
+              transactionId:
+                type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
