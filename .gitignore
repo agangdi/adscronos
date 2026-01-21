@@ -54,3 +54,6 @@ mcp-server/pnpm-lock.yaml
 CHATGPT_INTEGRATION.md
 MCP_IMPLEMENTATION_SUMMARY.md
 PUBLIC_AD_API.md
+.deploy
+.exclude
+.windsurf/
