@@ -1,0 +1,26 @@
+{
+  "name": "api-data-mcp-node",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "MCP server that exposes the API Data Shop tools using the official TypeScript SDK.",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "start:balance": "tsx src/balance-service.ts",
+    "start:faucet": "tsx src/faucet-service.ts",
+    "start:all": "concurrently \"npm run start\" \"npm run start:balance\" \"npm run start:faucet\""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "axios": "^1.6.0",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.9.0",
+    "openai": "^4.20.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

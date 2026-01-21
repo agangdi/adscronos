@@ -1,0 +1,585 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Data Carousel Backend API",
+    "description": "Backend APIs used by the API Data Carousel component for processing queries, fetching ads, and tracking ad playback",
+    "version": "1.0.0",
+    "contact": {
+      "email": "support@x402-ads.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://your-domain.com",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Query Processing",
+      "description": "API query processing endpoints"
+    },
+    {
+      "name": "Ad Management",
+      "description": "Advertisement fetching and playback tracking"
+    }
+  ],
+  "paths": {
+    "/api/process-query": {
+      "post": {
+        "tags": ["Query Processing"],
+        "summary": "Process API Query",
+        "description": "Processes user queries for various API types (cryptocurrency, translation, weather, stock, news, geocoding, image recognition, sentiment analysis)",
+        "operationId": "processQuery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessQueryRequest"
+              },
+              "examples": {
+                "crypto": {
+                  "summary": "Cryptocurrency balance query",
+                  "value": {
+                    "apiType": "crypto-api",
+                    "userInput": "the CRO balance of 0x34Aa852F352D18423632CFF24695F5D349d0f53f"
+                  }
+                },
+                "translation": {
+                  "summary": "Translation query",
+                  "value": {
+                    "apiType": "translation-api",
+                    "userInput": "translate 'Hello, how are you?' to Spanish"
+                  }
+                },
+                "weather": {
+                  "summary": "Weather query",
+                  "value": {
+                    "apiType": "weather-api",
+                    "userInput": "weather in San Francisco"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessQueryResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful query",
+                    "value": {
+                      "success": true,
+                      "result": "50 CRO",
+                      "message": "Query processed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Missing required fields: apiType and userInput"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "API processor not initialized. Please set OPENAI_API_KEY and WALLET_PRIVATE_KEY environment variables."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ads/fetch": {
+      "get": {
+        "tags": ["Ad Management"],
+        "summary": "Fetch Random Ad",
+        "description": "Fetches a random approved ad of the specified type and creates a playback tracking record",
+        "operationId": "fetchAd",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type of ad to fetch",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["VIDEO", "IMAGE", "TEXT", "HTML"],
+              "default": "IMAGE"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdFetchResponse"
+                },
+                "example": {
+                  "playbackId": "550e8400-e29b-41d4-a716-446655440000",
+                  "ad": {
+                    "id": "clx123456789",
+                    "name": "Summer Sale Campaign",
+                    "type": "IMAGE",
+                    "assetUrl": "https://cdn.example.com/ads/image.jpg",
+                    "clickUrl": "https://example.com/landing-page",
+                    "durationMs": 10000,
+                    "width": 1920,
+                    "height": 1080,
+                    "advertiser": {
+                      "name": "Example Corp"
+                    },
+                    "campaign": {
+                      "name": "Q4 2024 Campaign"
+                    }
+                  },
+                  "instructions": {
+                    "message": "Please call the playback completion endpoint when the ad finishes playing",
+                    "endpoint": "/api/ads/playback",
+                    "method": "POST",
+                    "requiredFields": ["playbackId", "status", "viewDuration"]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid ad type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No available ads for the requested type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "AD_API_KEY not configured"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ads/playback": {
+      "post": {
+        "tags": ["Ad Management"],
+        "summary": "Report Ad Playback Status",
+        "description": "Updates the playback status and records viewing metrics. Call this endpoint when the ad playback completes, is skipped, or encounters an error.",
+        "operationId": "reportPlayback",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaybackRequest"
+              },
+              "examples": {
+                "completed": {
+                  "summary": "Completed playback",
+                  "value": {
+                    "playbackId": "550e8400-e29b-41d4-a716-446655440000",
+                    "status": "COMPLETED",
+                    "viewDuration": 10000,
+                    "metadata": {
+                      "deviceType": "desktop",
+                      "apiType": "crypto-api"
+                    }
+                  }
+                },
+                "skipped": {
+                  "summary": "Skipped playback",
+                  "value": {
+                    "playbackId": "550e8400-e29b-41d4-a716-446655440000",
+                    "status": "SKIPPED",
+                    "viewDuration": 3000,
+                    "metadata": {
+                      "skipReason": "user_skip",
+                      "deviceType": "mobile"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Playback status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaybackResponse"
+                },
+                "example": {
+                  "success": true,
+                  "playbackId": "550e8400-e29b-41d4-a716-446655440000",
+                  "status": "COMPLETED",
+                  "message": "Playback status updated to COMPLETED",
+                  "data": {
+                    "viewDuration": 10000,
+                    "completedAt": "2024-12-18T14:45:00.000Z",
+                    "creative": {
+                      "id": "clx123456789",
+                      "name": "Summer Sale Campaign",
+                      "type": "IMAGE"
+                    },
+                    "campaign": {
+                      "id": "clx987654321",
+                      "name": "Q4 2024 Campaign"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Playback record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProcessQueryRequest": {
+        "type": "object",
+        "required": ["apiType", "userInput"],
+        "properties": {
+          "apiType": {
+            "type": "string",
+            "description": "Type of API to query",
+            "enum": [
+              "crypto-api",
+              "translation-api",
+              "weather-api",
+              "stock-api",
+              "news-api",
+              "geocoding-api",
+              "image-api",
+              "sentiment-api"
+            ],
+            "example": "crypto-api"
+          },
+          "userInput": {
+            "type": "string",
+            "description": "User's query input",
+            "example": "the CRO balance of 0x34Aa852F352D18423632CFF24695F5D349d0f53f"
+          }
+        }
+      },
+      "ProcessQueryResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the query was processed successfully"
+          },
+          "result": {
+            "type": "string",
+            "description": "The result of the API query"
+          },
+          "message": {
+            "type": "string",
+            "description": "Additional message or error details"
+          }
+        }
+      },
+      "AdFetchResponse": {
+        "type": "object",
+        "required": ["playbackId", "ad"],
+        "properties": {
+          "playbackId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this ad playback session"
+          },
+          "ad": {
+            "$ref": "#/components/schemas/Ad"
+          },
+          "instructions": {
+            "$ref": "#/components/schemas/PlaybackInstructions"
+          }
+        }
+      },
+      "Ad": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Ad creative ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Ad name"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["VIDEO", "IMAGE", "TEXT", "HTML"],
+            "description": "Ad type"
+          },
+          "assetUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the ad asset (video, image, etc.)"
+          },
+          "clickUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to redirect when ad is clicked"
+          },
+          "durationMs": {
+            "type": "integer",
+            "description": "Recommended display duration in milliseconds"
+          },
+          "width": {
+            "type": "integer",
+            "description": "Ad width in pixels"
+          },
+          "height": {
+            "type": "integer",
+            "description": "Ad height in pixels"
+          },
+          "advertiser": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Advertiser name"
+              }
+            }
+          },
+          "campaign": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Campaign name"
+              }
+            }
+          }
+        }
+      },
+      "PlaybackInstructions": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Instructions for the client"
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "Endpoint to call for playback reporting"
+          },
+          "method": {
+            "type": "string",
+            "description": "HTTP method to use"
+          },
+          "requiredFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Required fields for playback reporting"
+          }
+        }
+      },
+      "PlaybackRequest": {
+        "type": "object",
+        "required": ["playbackId", "status"],
+        "properties": {
+          "playbackId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The playback ID returned from the ad fetch endpoint"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["STARTED", "COMPLETED", "SKIPPED", "ERROR"],
+            "description": "Playback status"
+          },
+          "viewDuration": {
+            "type": "integer",
+            "description": "Actual viewing time in milliseconds"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional tracking data",
+            "properties": {
+              "deviceType": {
+                "type": "string",
+                "enum": ["desktop", "mobile", "tablet"],
+                "description": "Type of device"
+              },
+              "apiType": {
+                "type": "string",
+                "description": "Type of API being accessed when ad was shown"
+              },
+              "skipReason": {
+                "type": "string",
+                "description": "Reason for skipping (if applicable)"
+              },
+              "userInteraction": {
+                "type": "boolean",
+                "description": "Whether user interacted with the ad"
+              }
+            }
+          }
+        }
+      },
+      "PlaybackResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the playback update was successful"
+          },
+          "playbackId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The playback ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["STARTED", "COMPLETED", "SKIPPED", "ERROR"],
+            "description": "Current playback status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "viewDuration": {
+                "type": "integer",
+                "description": "Total view duration in milliseconds"
+              },
+              "completedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when playback completed"
+              },
+              "creative": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "campaign": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always false for errors"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      }
+    }
+  }
+}
