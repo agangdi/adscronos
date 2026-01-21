@@ -1,0 +1,570 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdType {
+  VIDEO
+  IMAGE
+  TEXT
+  HTML
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ENDED
+  ARCHIVED
+}
+
+enum PricingModel {
+  CPM
+  CPC
+  CPV
+  FIXED
+}
+
+enum ServingStatus {
+  ACTIVE
+  PAUSED
+}
+
+enum AdEventType {
+  IMPRESSION
+  START
+  FIRST_QUARTILE
+  MIDPOINT
+  THIRD_QUARTILE
+  COMPLETE
+  SKIP
+  CLICK
+}
+
+enum WebhookStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  RETRYING
+}
+
+enum LedgerDirection {
+  CREDIT
+  DEBIT
+}
+
+enum UserRole {
+  ADMIN
+  ADVERTISER
+  PUBLISHER
+}
+
+enum CreativeStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum BillingStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum SessionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+model Advertiser {
+  id           String      @id @default(cuid())
+  name         String
+  contactEmail String
+  authEmail    String      @unique
+  passwordHash String
+  website      String?
+  apiKey       String      @unique
+  role         UserRole    @default(ADVERTISER)
+  timezone     String      @default("UTC")
+  campaigns    Campaign[]
+  creatives    Creative[]
+  ledger       LedgerEntry[]
+  sessions     UserSession[]
+  billings     Billing[]
+  chatgptTokens ChatGPTToken[]
+  events       AdEvent[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Publisher {
+  id                String            @id @default(cuid())
+  siteName          String
+  domain            String
+  authEmail         String            @unique
+  passwordHash      String
+  appId             String            @unique
+  apiKey            String            @unique
+  role              UserRole          @default(PUBLISHER)
+  timezone          String            @default("UTC")
+  webhookUrl        String?
+  webhookSecret     String?
+  adUnits           AdUnit[]
+  events            AdEvent[]
+  webhookDeliveries WebhookDelivery[]
+  ledger            LedgerEntry[]
+  sessions          UserSession[]
+  billings          Billing[]
+  rollups           AdEventRollupDaily[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+model AdUnit {
+  id          String        @id @default(cuid())
+  publisher   Publisher     @relation(fields: [publisherId], references: [id])
+  publisherId String
+  key         String
+  adType      AdType
+  description String?
+  serving     ServingConfig[]
+  events      AdEvent[]
+  rollups     AdEventRollupDaily[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([publisherId, key])
+}
+
+model Campaign {
+  id           String         @id @default(cuid())
+  advertiser   Advertiser     @relation(fields: [advertiserId], references: [id])
+  advertiserId String
+  name         String
+  description  String?
+  status       CampaignStatus @default(DRAFT)
+  budgetCents  Int?
+  spendCents   Int            @default(0)
+  startAt      DateTime?
+  endAt        DateTime?
+  timezone     String         @default("UTC")
+  targetingConfig Json?       // Audience targeting configuration
+  creatives    Creative[]
+  serving      ServingConfig[]
+  events       AdEvent[]
+  versions     CampaignVersion[]
+  rollups      AdEventRollupDaily[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Creative {
+  id           String        @id @default(cuid())
+  advertiser   Advertiser    @relation(fields: [advertiserId], references: [id])
+  advertiserId String
+  campaign     Campaign?     @relation(fields: [campaignId], references: [id])
+  campaignId   String?
+  name         String
+  type         AdType
+  status       CreativeStatus @default(DRAFT)
+  assetUrl     String
+  clickUrl     String?
+  durationMs   Int?
+  width        Int?
+  height       Int?
+  version      Int           @default(1)
+  parentId     String?       // For A/B testing versions
+  parent       Creative?     @relation("CreativeVersions", fields: [parentId], references: [id])
+  versions     Creative[]    @relation("CreativeVersions")
+  events       AdEvent[]
+  rollups      AdEventRollupDaily[]
+  adSessions   AdSession[]   // ChatGPT integration
+  adPlaybacks  AdPlayback[]  // Public ad serving
+  approvalNotes String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model ServingConfig {
+  id           String        @id @default(cuid())
+  campaign     Campaign      @relation(fields: [campaignId], references: [id])
+  campaignId   String
+  adUnit       AdUnit        @relation(fields: [adUnitId], references: [id])
+  adUnitId     String
+  pricingModel PricingModel  @default(CPM)
+  priceCents   Int
+  status       ServingStatus @default(ACTIVE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([campaignId, adUnitId])
+}
+
+model AdEvent {
+  id           String       @id @default(cuid())
+  eventType    AdEventType
+  publisher    Publisher    @relation(fields: [publisherId], references: [id])
+  publisherId  String
+  adUnit       AdUnit       @relation(fields: [adUnitId], references: [id])
+  adUnitId     String
+  campaign     Campaign?    @relation(fields: [campaignId], references: [id])
+  campaignId   String?
+  creative     Creative?    @relation(fields: [creativeId], references: [id])
+  creativeId   String?
+  advertiser   Advertiser?  @relation(fields: [advertiserId], references: [id])
+  advertiserId String?
+  requestId    String?
+  signature    String?
+  ts           DateTime     @default(now())
+  ipHash       String?
+  uaHash       String?
+  ledgerEntry  LedgerEntry?
+  webhookDeliveries WebhookDelivery[]
+}
+
+model WebhookDelivery {
+  id             String        @id @default(cuid())
+  publisher      Publisher     @relation(fields: [publisherId], references: [id])
+  publisherId    String
+  event          AdEvent       @relation(fields: [eventId], references: [id])
+  eventId        String
+  targetUrl      String
+  status         WebhookStatus @default(PENDING)
+  attempt        Int           @default(0)
+  nextAttemptAt  DateTime?
+  responseStatus Int?
+  error          String?
+  payload        Json
+  signature      String?
+  retries        WebhookRetry[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model LedgerEntry {
+  id           String          @id @default(cuid())
+  event        AdEvent?        @relation(fields: [eventId], references: [id])
+  eventId      String?         @unique
+  advertiser   Advertiser?     @relation(fields: [advertiserId], references: [id])
+  advertiserId String?
+  publisher    Publisher?      @relation(fields: [publisherId], references: [id])
+  publisherId  String?
+  amountCents  Int
+  currency     String          @default("USD")
+  direction    LedgerDirection
+  description  String?
+  createdAt    DateTime        @default(now())
+}
+
+model AdEventRollupDaily {
+  id           String   @id @default(cuid())
+  date         DateTime // UTC date
+  publisher    Publisher @relation(fields: [publisherId], references: [id])
+  publisherId  String
+  adUnit       AdUnit?   @relation(fields: [adUnitId], references: [id])
+  adUnitId     String?
+  campaign     Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId   String?
+  creative     Creative? @relation(fields: [creativeId], references: [id])
+  creativeId   String?
+  impressions  Int       @default(0)
+  clicks       Int       @default(0)
+  completes    Int       @default(0)
+  skips        Int       @default(0)
+  spendCents   Int       @default(0)
+
+  @@index([publisherId])
+  @@index([campaignId])
+  @@index([creativeId])
+  @@index([adUnitId])
+}
+
+// New models for advanced features
+
+model UserSession {
+  id           String        @id @default(cuid())
+  advertiser   Advertiser?   @relation(fields: [advertiserId], references: [id])
+  advertiserId String?
+  publisher    Publisher?    @relation(fields: [publisherId], references: [id])
+  publisherId  String?
+  token        String        @unique
+  refreshToken String?       @unique
+  status       SessionStatus @default(ACTIVE)
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model ApiRateLimit {
+  id           String   @id @default(cuid())
+  identifier   String   // API key or IP address
+  endpoint     String
+  requests     Int      @default(0)
+  windowStart  DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([identifier, endpoint, windowStart])
+  @@index([windowStart])
+}
+
+model CampaignVersion {
+  id           String   @id @default(cuid())
+  campaign     Campaign @relation(fields: [campaignId], references: [id])
+  campaignId   String
+  version      Int
+  name         String
+  description  String?
+  budgetCents  Int?
+  targetingConfig Json?
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@unique([campaignId, version])
+}
+
+model Billing {
+  id           String        @id @default(cuid())
+  advertiser   Advertiser?   @relation(fields: [advertiserId], references: [id])
+  advertiserId String?
+  publisher    Publisher?    @relation(fields: [publisherId], references: [id])
+  publisherId  String?
+  amountCents  Int
+  currency     String        @default("USD")
+  status       BillingStatus @default(PENDING)
+  description  String?
+  invoiceUrl   String?
+  paymentMethod String?
+  transactionId String?
+  dueDate      DateTime?
+  paidAt       DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status])
+  @@index([dueDate])
+}
+
+model ChatGPTToken {
+  id           String     @id @default(cuid())
+  advertiser   Advertiser @relation(fields: [advertiserId], references: [id])
+  advertiserId String
+  token        String     @unique
+  usageCount   Int        @default(0)
+  maxUsage     Int?
+  expiresAt    DateTime?
+  isActive     Boolean    @default(true)
+  metadata     Json?      // Store additional token info
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model AnalyticsEvent {
+  id           String   @id @default(cuid())
+  eventType    String   // impression, click, conversion, etc.
+  publisherId  String?
+  advertiserId String?
+  campaignId   String?
+  creativeId   String?
+  adUnitId     String?
+  value        Float?
+  metadata     Json?
+  ipHash       String?
+  userAgent    String?
+  referrer     String?
+  timestamp    DateTime @default(now())
+
+  @@index([eventType])
+  @@index([timestamp])
+  @@index([publisherId])
+  @@index([advertiserId])
+  @@index([campaignId])
+}
+
+model WebhookRetry {
+  id           String          @id @default(cuid())
+  delivery     WebhookDelivery @relation(fields: [deliveryId], references: [id])
+  deliveryId   String
+  attempt      Int
+  status       WebhookStatus
+  responseStatus Int?
+  responseBody String?
+  error        String?
+  retryAt      DateTime
+  createdAt    DateTime        @default(now())
+
+  @@index([retryAt])
+}
+
+// ChatGPT Integration Models
+
+enum ResourceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ResourceFormat {
+  TEXT
+  MARKDOWN
+  HTML
+  JSON
+}
+
+enum AccessMethod {
+  AD_COMPLETION
+  SUBSCRIPTION
+  DIRECT_PAYMENT
+}
+
+model PremiumResource {
+  id               String         @id @default(cuid())
+  title            String
+  description      String
+  category         String
+  tags             String[]
+  status           ResourceStatus @default(DRAFT)
+  isPublic         Boolean        @default(true)
+  adRequirement    Json           // { minViewDuration, adType, cost }
+  previewContent   String
+  estimatedReadTime Int           @default(5)
+  metadata         Json?
+  content          ResourceContent?
+  accesses         ResourceAccess[]
+  adSessions       AdSession[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@index([tags])
+}
+
+model ResourceContent {
+  id           String         @id @default(cuid())
+  resource     PremiumResource @relation(fields: [resourceId], references: [id])
+  resourceId   String         @unique
+  fullContent  String
+  format       ResourceFormat @default(TEXT)
+  fileUrl      String?
+  fileSize     Int?
+  checksum     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model AdSession {
+  id                   String         @id @default(cuid())
+  resource             PremiumResource @relation(fields: [resourceId], references: [id])
+  resourceId           String
+  creative             Creative       @relation(fields: [adId], references: [id])
+  adId                 String
+  userId               String         // ChatGPT user identifier
+  requiredViewDuration Int
+  expiresAt            DateTime
+  adCompletion         AdCompletion?
+  resourceAccess       ResourceAccess[]
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AdCompletion {
+  id               String    @id @default(cuid())
+  session          AdSession @relation(fields: [sessionId], references: [id])
+  sessionId        String    @unique
+  completed        Boolean   @default(false)
+  viewDuration     Int       // Actual viewing time in seconds
+  interactionData  Json?     // Click data, engagement metrics
+  paymentProcessed Boolean   @default(false)
+  billingAmount    Float?
+  transactionId    String?
+  completedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([completed])
+  @@index([paymentProcessed])
+}
+
+model ResourceAccess {
+  id           String         @id @default(cuid())
+  resource     PremiumResource @relation(fields: [resourceId], references: [id])
+  resourceId   String
+  session      AdSession?     @relation(fields: [sessionId], references: [id])
+  sessionId    String?
+  userId       String         // ChatGPT user identifier
+  accessMethod AccessMethod
+  expiresAt    DateTime?
+  accessedAt   DateTime       @default(now())
+  createdAt    DateTime       @default(now())
+
+  @@index([userId])
+  @@index([resourceId])
+  @@index([expiresAt])
+}
+
+model ChatGPTUser {
+  id            String   @id @default(cuid())
+  chatgptUserId String   @unique // ChatGPT's internal user ID
+  email         String?
+  displayName   String?
+  subscriptionTier String @default("free")
+  totalSpent    Float    @default(0)
+  usageStats    Json?    // Monthly usage statistics
+  preferences   Json?    // User preferences and settings
+  isActive      Boolean  @default(true)
+  lastActiveAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([chatgptUserId])
+  @@index([subscriptionTier])
+}
+
+// Public Ad Serving Models
+
+enum PlaybackStatus {
+  STARTED
+  COMPLETED
+  SKIPPED
+  ERROR
+}
+
+model AdPlayback {
+  id           String         @id @default(uuid()) // UUID for each ad play
+  creative     Creative       @relation(fields: [creativeId], references: [id])
+  creativeId   String
+  apiKey       String         // Publisher API key that requested the ad
+  publisherId  String?        // Optional: resolved publisher ID
+  status       PlaybackStatus @default(STARTED)
+  requestedType AdType        // The ad type that was requested
+  viewDuration Int?           // Actual viewing time in milliseconds
+  completedAt  DateTime?      // When the ad playback was completed
+  metadata     Json?          // Additional tracking data (IP, user agent, etc.)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([apiKey])
+  @@index([creativeId])
+  @@index([status])
+  @@index([createdAt])
+}

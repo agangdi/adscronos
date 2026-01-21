@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "X402 Ad Platform",
+  "name_for_model": "x402_ads",
+  "description_for_human": "Demo ad platform with JS SDK and ad-complete paywall flow for ChatGPT tools.",
+  "description_for_model": "Register advertisers and publishers, embed a JS SDK to trigger ads, record events, and unlock paywalled resources after ad completion.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:3000/openapi.json",
+    "is_user_authenticated": false
+  },
+  "logo_url": "http://localhost:3000/vercel.svg",
+  "contact_email": "ops@example.com",
+  "legal_info_url": "http://localhost:3000"
+}

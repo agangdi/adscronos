@@ -1,0 +1,96 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "X402 Ad Platform API (Demo)",
+    "version": "0.1.0",
+    "description": "Demo endpoints for registering advertisers/publishers and recording ad events."
+  },
+  "paths": {
+    "/api/advertisers": {
+      "post": {
+        "summary": "Register advertiser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "contactEmail": { "type": "string", "format": "email" },
+                  "website": { "type": "string", "format": "uri" }
+                },
+                "required": ["name", "contactEmail"]
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Created advertiser" } }
+      }
+    },
+    "/api/publishers": {
+      "post": {
+        "summary": "Register publisher",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "siteName": { "type": "string" },
+                  "domain": { "type": "string", "format": "uri" },
+                  "supportedTypes": {
+                    "type": "array",
+                    "items": { "enum": ["video", "image", "text", "html"] }
+                  }
+                },
+                "required": ["siteName", "domain", "supportedTypes"]
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Created publisher" } }
+      }
+    },
+    "/api/events": {
+      "post": {
+        "summary": "Record ad event",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "appId": { "type": "string" },
+                  "adUnitId": { "type": "string" },
+                  "event": {
+                    "enum": [
+                      "impression",
+                      "start",
+                      "firstQuartile",
+                      "midpoint",
+                      "thirdQuartile",
+                      "complete",
+                      "skip",
+                      "click"
+                    ]
+                  },
+                  "ts": { "type": "integer" },
+                  "signature": { "type": "string" }
+                },
+                "required": ["appId", "adUnitId", "event"]
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Event recorded" } }
+      },
+      "get": {
+        "summary": "Snapshot of in-memory store",
+        "responses": { "200": { "description": "Current data" } }
+      }
+    }
+  }
+}
