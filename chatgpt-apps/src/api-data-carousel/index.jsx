@@ -127,6 +127,8 @@ function App() {
   const [apiResult, setApiResult] = React.useState("");
   const [adData, setAdData] = React.useState(null);
   const [adStartTime, setAdStartTime] = React.useState(null);
+  const [canSkipAd, setCanSkipAd] = React.useState(false);
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   const handlePurchaseClick = (apiData) => {
     setSelectedApi(apiData);
@@ -134,51 +136,10 @@ function App() {
     setShowPurchaseModal(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setShowPurchaseModal(false);
-    
-    // Fetch ad from backend
-    try {
-      const response = await fetch(`${API_HOST}/api/ads/fetch?type=IMAGE`);
-      const data = await response.json();
-      
-      if (data.playbackId && data.ad) {
-        setAdData(data);
-        setAdStartTime(Date.now());
-        setShowAdModal(true);
-        setAdCountdown(AD_DURATION);
-      } else {
-        console.error('Invalid ad data received:', data);
-        // Fallback: proceed without ad
-        processApiQuery();
-      }
-    } catch (error) {
-      console.error('Error fetching ad:', error);
-      // Fallback: proceed without ad
-      processApiQuery();
-    }
-  };
-
-  React.useEffect(() => {
-    if (showAdModal && adCountdown > 0) {
-      const timer = setTimeout(() => {
-        setAdCountdown(adCountdown - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (showAdModal && adCountdown === 0) {
-      setShowAdModal(false);
-      // Report ad playback completion
-      reportAdPlayback();
-      // Call server API to process the query
-      processApiQuery();
-    }
-  }, [showAdModal, adCountdown, selectedApi]);
-
   const reportAdPlayback = async () => {
     if (!adData || !adData.playbackId) return;
     
-    const viewDuration = Date.now() - adStartTime;
+    const viewDuration = adStartTime ? Date.now() - adStartTime : 0;
     
     try {
       await fetch(`${API_HOST}/api/ads/playback`, {
@@ -203,6 +164,7 @@ function App() {
   };
 
   const processApiQuery = async () => {
+    setIsProcessing(true);
     try {
       const response = await fetch(`${API_HOST}/api/process-query`, {
         method: 'POST',
@@ -223,13 +185,62 @@ function App() {
         setApiResult(result.message || 'Failed to process request');
       }
       
+      setIsProcessing(false);
       setShowResult(true);
     } catch (error) {
       console.error('Error calling API:', error);
       setApiResult('Error: Failed to connect to server. Please ensure the server is running.');
+      setIsProcessing(false);
       setShowResult(true);
     }
   };
+
+  const handleSkipAd = React.useCallback(() => {
+    setShowAdModal(false);
+    setCanSkipAd(false);
+    reportAdPlayback();
+    processApiQuery();
+  }, [adData, adStartTime, selectedApi, queryInput]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setShowPurchaseModal(false);
+    
+    // Fetch ad from backend
+    try {
+      const response = await fetch(`${API_HOST}/api/ads/fetch?type=IFRAME`);
+      const data = await response.json();
+      
+      if (data.playbackId && data.ad) {
+        setAdData(data);
+        setAdStartTime(Date.now());
+        setShowAdModal(true);
+        setAdCountdown(AD_DURATION);
+        setCanSkipAd(false);
+      } else {
+        console.error('Invalid ad data received:', data);
+        processApiQuery();
+      }
+    } catch (error) {
+      console.error('Error fetching ad:', error);
+      processApiQuery();
+    }
+  };
+
+  React.useEffect(() => {
+    if (showAdModal && adCountdown > 0) {
+      const timer = setTimeout(() => {
+        setAdCountdown(adCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (showAdModal && adCountdown === 0) {
+      if (adData?.ad?.type === 'IFRAME') {
+        setCanSkipAd(true);
+      } else {
+        handleSkipAd();
+      }
+    }
+  }, [showAdModal, adCountdown, adData?.ad?.type, handleSkipAd]);
 
   React.useEffect(() => {
     if (!emblaApi) return;
@@ -370,24 +381,50 @@ function App() {
               <div className="text-sm text-gray-500">Advertisement</div>
             </div>
             
-            {/* Ad Image */}
+            {/* Ad Content */}
             <div className="relative rounded-xl overflow-hidden bg-gray-100 mb-4">
-              <img 
-                src={adData.ad.assetUrl} 
-                alt={adData.ad.name}
-                className="w-full h-auto max-h-96 object-contain"
-                onError={(e) => {
-                  e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%23ddd" width="800" height="400"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="sans-serif" font-size="24"%3EAd Image%3C/text%3E%3C/svg%3E';
-                }}
-              />
-              {adData.ad.clickUrl && (
-                <a 
-                  href={adData.ad.clickUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="absolute inset-0 cursor-pointer"
-                  aria-label="Visit advertiser"
-                />
+              {adData.ad.type === 'IFRAME' ? (
+                // YouTube iframe with autoplay
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    src={`${adData.ad.assetUrl}${adData.ad.assetUrl.includes('?') ? '&' : '?'}autoplay=1&mute=1&rel=0`}
+                    className="absolute top-0 left-0 w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title={adData.ad.name || "Advertisement"}
+                  />
+                  {adData.ad.clickUrl && (
+                    <a 
+                      href={adData.ad.clickUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="absolute bottom-4 right-4 bg-white/90 hover:bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-800 shadow-lg z-10"
+                    >
+                      Learn More →
+                    </a>
+                  )}
+                </div>
+              ) : (
+                // Image ad
+                <>
+                  <img 
+                    src={adData.ad.assetUrl} 
+                    alt={adData.ad.name}
+                    className="w-full h-auto max-h-96 object-contain"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%23ddd" width="800" height="400"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="sans-serif" font-size="24"%3EAd Image%3C/text%3E%3C/svg%3E';
+                    }}
+                  />
+                  {adData.ad.clickUrl && (
+                    <a 
+                      href={adData.ad.clickUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="absolute inset-0 cursor-pointer"
+                      aria-label="Visit advertiser"
+                    />
+                  )}
+                </>
               )}
             </div>
             
@@ -401,12 +438,44 @@ function App() {
               )}
             </div>
             
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${((AD_DURATION - adCountdown) / AD_DURATION) * 100}%` }}
-              />
+            {/* Progress Bar and Skip Button */}
+            <div className="space-y-3">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-1000"
+                  style={{ width: `${((AD_DURATION - adCountdown) / AD_DURATION) * 100}%` }}
+                />
+              </div>
+              
+              {/* Skip Ad Button - only show for iframe ads after countdown */}
+              {canSkipAd && adData.ad.type === 'IFRAME' && (
+                <button
+                  onClick={handleSkipAd}
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
+                >
+                  Skip Ad →
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Processing Modal */}
+      {isProcessing && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
+            <div className="mb-6">
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Processing Your Request</h2>
+            <p className="text-gray-600 mb-4">
+              {selectedApi?.name ? `Calling ${selectedApi.name}...` : 'Processing...'}
+            </p>
+            <div className="bg-blue-50 rounded-lg p-4">
+              <p className="text-sm text-blue-800 font-medium">
+                Please wait while we fetch your data
+              </p>
             </div>
           </div>
         </div>

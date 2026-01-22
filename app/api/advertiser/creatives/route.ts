@@ -7,7 +7,7 @@ import type { AuthenticatedRequest } from '@/lib/middleware';
 
 const createCreativeSchema = z.object({
   name: z.string().min(1).max(255),
-  type: z.enum(['IMAGE', 'VIDEO', 'TEXT', 'HTML']),
+  type: z.enum(['IMAGE', 'VIDEO', 'TEXT', 'HTML', 'IFRAME']),
   assetUrl: z.string().url(),
   clickUrl: z.string().url().optional(),
   durationMs: z.number().int().positive().optional(),

@@ -12,6 +12,7 @@ enum AdType {
   IMAGE
   TEXT
   HTML
+  IFRAME
 }
 
 enum CampaignStatus {

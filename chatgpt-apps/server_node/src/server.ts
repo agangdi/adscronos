@@ -589,7 +589,7 @@ httpServer.listen(port, () => {
     `  API process endpoint: POST http://localhost:${port}${apiProcessPath}`
   );
   console.log(
-    `  Ad fetch endpoint: GET http://localhost:${port}${adFetchPath}?type=IMAGE`
+    `  Ad fetch endpoint: GET http://localhost:${port}${adFetchPath}?type=VIDEO`
   );
   console.log(
     `  Ad playback endpoint: POST http://localhost:${port}${adPlaybackPath}`

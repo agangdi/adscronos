@@ -5,7 +5,7 @@ import AdvertiserLayout from "@/components/AdvertiserLayout";
 
 interface Creative {
   id: string;
-  type: "VIDEO" | "IMAGE" | "TEXT" | "HTML";
+  type: "VIDEO" | "IMAGE" | "TEXT" | "HTML" | "IFRAME";
   assetUrl: string;
   clickUrl?: string;
   durationMs?: number;
@@ -32,7 +32,7 @@ export default function CreativesPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    type: "IMAGE" as "VIDEO" | "IMAGE" | "TEXT" | "HTML",
+    type: "IMAGE" as "VIDEO" | "IMAGE" | "TEXT" | "HTML" | "IFRAME",
     assetUrl: "",
     clickUrl: "",
     durationMs: "",
@@ -52,6 +52,47 @@ export default function CreativesPage() {
   useEffect(() => {
     fetchData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleDelete = async (creativeId: string) => {
+    if (!confirm("Are you sure you want to delete this creative? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        alert("Authentication required. Please log in.");
+        window.location.href = '/login?type=advertiser';
+        return;
+      }
+
+      const response = await fetch(`/api/advertiser/creatives/${creativeId}`, {
+        method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('authToken');
+        alert("Session expired. Please log in again.");
+        window.location.href = '/login?type=advertiser';
+        return;
+      }
+
+      if (response.ok) {
+        alert("Creative deleted successfully!");
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error || 'Failed to delete creative'}`);
+      }
+    } catch (error) {
+      console.error("Failed to delete creative:", error);
+      alert("Failed to delete creative");
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -117,9 +158,18 @@ export default function CreativesPage() {
         return;
       }
 
+      // Extract URL from iframe HTML if needed
+      let assetUrl = formData.assetUrl;
+      if (formData.type === "IFRAME" && assetUrl.includes("<iframe")) {
+        const srcMatch = assetUrl.match(/src=["']([^"']+)["']/);
+        if (srcMatch && srcMatch[1]) {
+          assetUrl = srcMatch[1];
+        }
+      }
+
       // Validate URL format
       try {
-        new URL(formData.assetUrl);
+        new URL(assetUrl);
       } catch {
         alert("Please enter a valid Asset URL");
         return;
@@ -135,7 +185,7 @@ export default function CreativesPage() {
       const payload = {
         name: `${formData.type} Creative - ${new Date().toLocaleDateString()}`,
         type: formData.type,
-        assetUrl: formData.assetUrl,
+        assetUrl: assetUrl, // Use the extracted URL
         clickUrl: formData.clickUrl || undefined,
         durationMs: formData.durationMs ? parseInt(formData.durationMs) : undefined,
         width: formData.width ? parseInt(formData.width) : undefined,
@@ -228,13 +278,14 @@ export default function CreativesPage() {
                   <label className="block text-sm font-medium text-slate-300">Type</label>
                   <select
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as "VIDEO" | "IMAGE" | "TEXT" | "HTML" })}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value as "VIDEO" | "IMAGE" | "TEXT" | "HTML" | "IFRAME" })}
                     className="mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100"
                   >
                     <option value="IMAGE">Image</option>
                     <option value="VIDEO">Video</option>
                     <option value="TEXT">Text</option>
                     <option value="HTML">HTML</option>
+                    <option value="IFRAME">iFrame (YouTube, etc.)</option>
                   </select>
                 </div>
                 <div>
@@ -258,13 +309,28 @@ export default function CreativesPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-300">Asset URL *</label>
                 <input
-                  type="url"
+                  type={formData.type === "IFRAME" ? "text" : "url"}
                   required
                   value={formData.assetUrl}
-                  onChange={(e) => setFormData({ ...formData, assetUrl: e.target.value })}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    // If it's an iframe type and the value contains iframe HTML, extract the src
+                    if (formData.type === "IFRAME" && value.includes("<iframe")) {
+                      const srcMatch = value.match(/src=["']([^"']+)["']/);
+                      if (srcMatch && srcMatch[1]) {
+                        value = srcMatch[1];
+                      }
+                    }
+                    setFormData({ ...formData, assetUrl: value });
+                  }}
                   className="mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100"
-                  placeholder="https://example.com/ad-image.jpg"
+                  placeholder={formData.type === "IFRAME" ? "https://www.youtube.com/embed/VIDEO_ID or paste iframe code" : "https://example.com/ad-image.jpg"}
                 />
+                {formData.type === "IFRAME" && (
+                  <p className="mt-1 text-xs text-slate-400">
+                    Paste YouTube embed URL or full iframe code - we&apos;ll extract the URL automatically
+                  </p>
+                )}
               </div>
 
               <div>
@@ -397,6 +463,18 @@ export default function CreativesPage() {
                     </div>
                   )}
                   
+                  {creative.type === "IFRAME" && (
+                    <div className="mb-3 aspect-video overflow-hidden rounded-lg bg-slate-800">
+                      <iframe
+                        src={creative.assetUrl}
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Ad Creative"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="space-y-1 text-xs text-slate-400">
                     {creative.width && creative.height && (
                       <p>Dimensions: {creative.width}×{creative.height}px</p>
@@ -407,8 +485,8 @@ export default function CreativesPage() {
                     <p>Created: {new Date(creative.createdAt).toLocaleDateString()}</p>
                   </div>
                   
-                  {creative.clickUrl && (
-                    <div className="mt-2">
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    {creative.clickUrl && (
                       <a
                         href={creative.clickUrl}
                         target="_blank"
@@ -417,8 +495,14 @@ export default function CreativesPage() {
                       >
                         View Landing Page →
                       </a>
-                    </div>
-                  )}
+                    )}
+                    <button
+                      onClick={() => handleDelete(creative.id)}
+                      className="rounded-md bg-red-600/10 px-3 py-1 text-xs font-medium text-red-400 hover:bg-red-600/20 hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

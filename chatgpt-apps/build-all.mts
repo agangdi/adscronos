@@ -6,6 +6,8 @@ import fs from "fs";
 import crypto from "crypto";
 import pkg from "./package.json" with { type: "json" };
 import tailwindcss from "@tailwindcss/vite";
+import dotenv from "dotenv";
+dotenv.config();
 
 const entries = fg.sync("src/**/index.{tsx,jsx}");
 const outDir = "assets";
@@ -157,7 +159,7 @@ console.groupEnd();
 
 console.log("new hash: ", h);
 
-const defaultBaseUrl = "http://localhost:4444";
+const defaultBaseUrl = process.env.CHATGPT_APPS_BUILD_BASE_URL || "http://localhost:4444";
 const baseUrlCandidate = process.env.BASE_URL?.trim() ?? "";
 const baseUrlRaw = baseUrlCandidate.length > 0 ? baseUrlCandidate : defaultBaseUrl;
 const normalizedBaseUrl = baseUrlRaw.replace(/\/+$/, "") || defaultBaseUrl;
