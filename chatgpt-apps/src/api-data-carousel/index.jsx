@@ -375,14 +375,9 @@ function App() {
       {/* Ad Modal */}
       {showAdModal && adData && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 shadow-2xl">
-            <div className="mb-4 text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-1">{adCountdown}s</div>
-              <div className="text-sm text-gray-500">Advertisement</div>
-            </div>
-            
+          <div className="bg-black rounded-lg max-w-3xl w-full mx-4 shadow-2xl overflow-hidden">
             {/* Ad Content */}
-            <div className="relative rounded-xl overflow-hidden bg-gray-100 mb-4">
+            <div className="relative">
               {adData.ad.type === 'IFRAME' ? (
                 // YouTube iframe with autoplay
                 <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
@@ -393,20 +388,58 @@ function App() {
                     allowFullScreen
                     title={adData.ad.name || "Advertisement"}
                   />
-                  {adData.ad.clickUrl && (
-                    <a 
-                      href={adData.ad.clickUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="absolute bottom-4 right-4 bg-white/90 hover:bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-800 shadow-lg z-10"
-                    >
-                      Learn More →
-                    </a>
-                  )}
+                  
+                  {/* Overlay controls - YouTube style */}
+                  <div className="absolute top-3 left-3 flex items-center gap-2 z-20">
+                    <span className="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded">
+                      AD
+                    </span>
+                    {adData.ad.advertiser?.name && (
+                      <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        {adData.ad.advertiser.name}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Bottom right controls */}
+                  <div className="absolute bottom-3 right-3 flex items-center gap-2 z-20">
+                    {adData.ad.clickUrl && (
+                      <a 
+                        href={adData.ad.clickUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="bg-white/90 hover:bg-white px-3 py-1.5 rounded text-xs font-semibold text-gray-800 shadow-lg transition-colors"
+                      >
+                        Learn More
+                      </a>
+                    )}
+                    
+                    {/* Countdown or Skip button */}
+                    {canSkipAd ? (
+                      <button
+                        onClick={handleSkipAd}
+                        className="bg-black/80 hover:bg-black text-white px-3 py-1.5 rounded text-xs font-semibold shadow-lg transition-colors"
+                      >
+                        Skip Ad →
+                      </button>
+                    ) : (
+                      <div className="bg-black/80 text-white px-3 py-1.5 rounded text-xs font-semibold shadow-lg">
+                        {adCountdown}s
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Progress bar at bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700/50 z-20">
+                    <div
+                      className="h-full bg-red-600 transition-all duration-1000"
+                      style={{ width: `${((AD_DURATION - adCountdown) / AD_DURATION) * 100}%` }}
+                    />
+                  </div>
                 </div>
               ) : (
                 // Image ad
-                <>
+                <div className="relative">
                   <img 
                     src={adData.ad.assetUrl} 
                     alt={adData.ad.name}
@@ -424,37 +457,15 @@ function App() {
                       aria-label="Visit advertiser"
                     />
                   )}
-                </>
-              )}
-            </div>
-            
-            {/* Ad Info */}
-            <div className="text-center text-sm text-gray-600 mb-4">
-              {adData.ad.advertiser?.name && (
-                <p className="font-medium">{adData.ad.advertiser.name}</p>
-              )}
-              {adData.ad.name && (
-                <p className="text-xs text-gray-500">{adData.ad.name}</p>
-              )}
-            </div>
-            
-            {/* Progress Bar and Skip Button */}
-            <div className="space-y-3">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-1000"
-                  style={{ width: `${((AD_DURATION - adCountdown) / AD_DURATION) * 100}%` }}
-                />
-              </div>
-              
-              {/* Skip Ad Button - only show for iframe ads after countdown */}
-              {canSkipAd && adData.ad.type === 'IFRAME' && (
-                <button
-                  onClick={handleSkipAd}
-                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
-                >
-                  Skip Ad →
-                </button>
+                  
+                  {/* Progress bar for image ads */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700/50">
+                    <div
+                      className="h-full bg-blue-600 transition-all duration-1000"
+                      style={{ width: `${((AD_DURATION - adCountdown) / AD_DURATION) * 100}%` }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
           </div>
