@@ -57,3 +57,5 @@ PUBLIC_AD_API.md
 .deploy
 .exclude
 .windsurf/
+chatgpt-apps/server_node/src/bitcoinnews-clean.txt
+chatgpt-apps/server_node/src/bitcoinnews.txt

@@ -5,9 +5,10 @@ import { payForResource, createWallet } from './x402-client.js';
 // Service endpoints (these would be actual x402-protected services)
 const BALANCE_SERVICE_URL = process.env.BALANCE_SERVICE_URL || 'http://localhost:3001/api/balance';
 const FAUCET_SERVICE_URL = process.env.FAUCET_SERVICE_URL || 'http://localhost:3002/api/faucet';
+const NEWS_SERVICE_URL = process.env.NEWS_SERVICE_URL || 'http://localhost:3008/api/news';
 
 interface IntentResult {
-  intent: 'balance_check' | 'faucet_request' | 'unknown';
+  intent: 'balance_check' | 'faucet_request' | 'bitcoin_news' | 'unknown';
   address?: string;
   confidence: number;
 }
@@ -33,13 +34,14 @@ export class ApiProcessor {
 Available intents:
 1. "balance_check" - User wants to check the balance of a Cronos blockchain address
 2. "faucet_request" - User wants to request test tokens from a faucet for an address
-3. "unknown" - Intent doesn't match any supported operation
+3. "bitcoin_news" - User wants to read Bitcoin news or information about Bitcoin/cryptocurrency news
+4. "unknown" - Intent doesn't match any supported operation
 
 Extract the Cronos address (0x...) if present in the query.
 
 Respond in JSON format:
 {
-  "intent": "balance_check" | "faucet_request" | "unknown",
+  "intent": "balance_check" | "faucet_request" | "bitcoin_news" | "unknown",
   "address": "0x..." or null,
   "confidence": 0.0-1.0
 }`
@@ -100,6 +102,24 @@ Respond in JSON format:
     }
   }
 
+  async processBitcoinNews(): Promise<{ content: string; summary: string }> {
+    try {
+      // Use x402-protected news service
+      const result = await payForResource(
+        NEWS_SERVICE_URL,
+        this.wallet
+      );
+      
+      return {
+        content: result.content,
+        summary: result.summary
+      };
+    } catch (error: any) {
+      console.error('Bitcoin news request error:', error);
+      throw new Error(`Failed to fetch Bitcoin news: ${error.message}`);
+    }
+  }
+
   async processQuery(apiType: string, userInput: string): Promise<any> {
     // Step 1: Recognize intent using OpenAI
     const intentResult = await this.recognizeIntent(userInput, apiType);
@@ -119,8 +139,7 @@ Respond in JSON format:
         return {
           success: true,
           intent: 'balance_check',
-          address: intentResult.address,
-          result: balanceResult,
+          content: balanceResult,
         };
 
       case 'faucet_request':
@@ -134,16 +153,32 @@ Respond in JSON format:
         return {
           success: true,
           intent: 'faucet_request',
-          address: intentResult.address,
-          result: faucetResult,
+          content: faucetResult,
         };
+
+      case 'bitcoin_news':
+        try {
+          const newsResult = await this.processBitcoinNews();
+          const formattedContent = `📰 Bitcoin News Summary:\n${newsResult.summary}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📄 Full Article:\n\n${newsResult.content}`;
+          return {
+            success: true,
+            intent: 'bitcoin_news',
+            content: formattedContent,
+          };
+        } catch (error: any) {
+          return {
+            success: false,
+            intent: 'bitcoin_news',
+            message: error.message,
+          };
+        }
 
       case 'unknown':
       default:
         return {
           success: false,
           intent: 'unknown',
-          message: 'Coming soon! This type of request is not yet supported. Currently we support:\n- Balance checking (e.g., "check balance of 0x...")\n- Faucet requests (e.g., "send test tokens to 0x...")',
+          message: 'Coming soon! This type of request is not yet supported. Currently we support:\n- Balance checking (e.g., "check balance of 0x...")\n- Faucet requests (e.g., "send test tokens to 0x...")\n- Bitcoin news (e.g., "show me Bitcoin news")',
         };
     }
   }

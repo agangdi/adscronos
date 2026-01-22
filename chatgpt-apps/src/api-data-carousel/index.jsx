@@ -14,7 +14,7 @@ const API_DATA_ITEMS = [
     requests: "Unlimited",
     description: "Real-time address balance and faucet of Cronos chain.",
     bgGradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-    exampleQuery: "the CRO balance of 0x34Aa852F352D18423632CFF24695F5D349d0f53f",
+    exampleQuery: "get 0x34Aa852F352D18423632CFF24695F5D349d0f53f some TCRO",
     mockResponse: "50 CRO"
   },
   {
@@ -180,7 +180,7 @@ function App() {
       const result = await response.json();
 
       if (result.success) {
-        setApiResult(result.result || result.message || 'Success');
+        setApiResult(result.content || 'Success');
       } else {
         setApiResult(result.message || 'Failed to process request');
       }
@@ -494,11 +494,11 @@ function App() {
 
       {/* Result Modal */}
       {showResult && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-green-600">API Response</h2>
-            <div className="bg-gray-100 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto">
-              <p className="text-sm font-mono whitespace-pre-wrap break-words">{apiResult}</p>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+            <h2 className="text-2xl font-bold mb-4 text-green-600 flex-shrink-0">API Response</h2>
+            <div className="bg-gray-100 rounded-lg p-4 mb-4 overflow-y-auto flex-1 min-h-0">
+              <p className="text-sm font-mono whitespace-pre-wrap break-words leading-relaxed">{apiResult}</p>
             </div>
             <button
               onClick={() => {
@@ -506,7 +506,7 @@ function App() {
                 setSelectedApi(null);
                 setQueryInput("");
               }}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex-shrink-0"
             >
               Close
             </button>
