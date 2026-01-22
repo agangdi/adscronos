@@ -6,101 +6,56 @@ import ApiDataCard from "./ApiDataCard";
 
 const API_DATA_ITEMS = [
   {
-    id: "crypto-api",
-    name: "Cryptocurrency API",
-    letter: "C",
-    price: "$0.1",
-    category: "Real-time",
+    id: "cronos-faucet",
+    name: "Cronos Faucet",
+    subtitle: "Get Cronos Gas",
+    logo: "https://cryptologos.cc/logos/cronos-cro-logo.svg",
+    price: "Free",
+    category: "Testnet",
+    requests: "Daily",
+    description: "Watch a short sponsored clip to receive testnet gas and start building on Cronos EVM instantly.",
+    bgGradient: "linear-gradient(135deg, #002D74 0%, #00A3FF 100%)",
+    exampleQuery: "get testnet CRO for 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    mockResponse: "✅ Sent 10 TCRO to your address. Transaction: 0xabc123..."
+  },
+  {
+    id: "cryptocom-vip",
+    name: "Crypto.com VIP Access",
+    subtitle: "Unlock VIP Rewards",
+    logo: "https://cryptologos.cc/logos/crypto-com-coin-cro-logo.svg",
+    price: "Premium",
+    category: "Exchange",
+    requests: "Limited",
+    description: "View sponsored content to unlock fee discounts, bonus rewards, or temporary VIP benefits.",
+    bgGradient: "linear-gradient(135deg, #002D74 0%, #103F91 100%)",
+    exampleQuery: "unlock VIP trading benefits",
+    mockResponse: "🎉 VIP Status Activated! Enjoy 0% trading fees for 24 hours and 2x CRO rewards."
+  },
+  {
+    id: "binance-square",
+    name: "Binance Square",
+    subtitle: "Sponsored Market Insight",
+    logo: "https://cryptologos.cc/logos/bnb-bnb-logo.svg",
+    price: "Free",
+    category: "Analytics",
     requests: "Unlimited",
-    description: "Real-time address balance and faucet of Cronos chain.",
-    bgGradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-    exampleQuery: "get 0x34Aa852F352D18423632CFF24695F5D349d0f53f some TCRO",
-    mockResponse: "50 CRO"
+    description: "Engage with sponsored crypto insights to unlock advanced charts, signals, or exclusive posts.",
+    bgGradient: "linear-gradient(135deg, #F3BA2F 0%, #FCD535 100%)",
+    exampleQuery: "show BTC market analysis",
+    mockResponse: "📊 BTC Analysis: Strong support at $42k. RSI: 58. Bullish momentum building. Premium signals unlocked."
   },
   {
-    id: "translation-api",
-    name: "Translation API",
-    letter: "T",
-    price: "$15.99",
-    category: "Batch",
-    requests: "100K chars",
-    description: "Neural machine translation supporting 100+ languages with 95%+ accuracy and natural-sounding results.",
-    bgGradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
-    exampleQuery: "translate 'Hello, how are you?' to Spanish",
-    mockResponse: "Hola, ¿cómo estás?"
-  },
-  {
-    id: "weather-api",
-    name: "Weather API",
-    letter: "W",
-    price: "Free",
-    category: "Real-time",
-    requests: "1K/mo",
-    description: "Get real-time weather data including temperature, humidity, wind speed, and forecasts for any location worldwide.",
-    bgGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    exampleQuery: "weather in San Francisco",
-    mockResponse: "22°C, Partly Cloudy, Humidity: 65%, Wind: 12 km/h"
-  },
-  {
-    id: "stock-api",
-    name: "Stock Market API",
-    letter: "S",
-    price: "$29.99",
-    category: "Premium",
-    requests: "10K/mo",
-    description: "Access real-time stock quotes, historical prices, and market analytics for global exchanges with <50ms latency.",
-    bgGradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-    exampleQuery: "AAPL stock price",
-    mockResponse: "AAPL: $178.45 (+2.34, +1.33%)"
-  },
-  {
-    id: "news-api",
-    name: "News API",
-    letter: "N",
-    price: "$19.99",
-    category: "Batch",
-    requests: "5K/mo",
-    description: "Search millions of news articles from 50,000+ sources worldwide with full-text search and filtering capabilities.",
-    bgGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-    exampleQuery: "latest technology news",
-    mockResponse: "Found 1,234 articles about technology from the past 24 hours"
-  },
-  {
-    id: "geocoding-api",
-    name: "Geocoding API",
-    letter: "G",
-    price: "Free",
-    category: "Batch",
-    requests: "2.5K/mo",
-    description: "Convert addresses to coordinates and vice versa with 99.9% accuracy. Includes place search and autocomplete.",
-    bgGradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-    exampleQuery: "coordinates of Times Square, New York",
-    mockResponse: "40.7580° N, 73.9855° W"
-  },
-
-  {
-    id: "image-api",
-    name: "Image Recognition API",
-    letter: "I",
-    price: "$39.99",
-    category: "Premium",
-    requests: "5K/mo",
-    description: "Advanced image recognition and classification using deep learning models. Detect objects, faces, and scenes.",
-    bgGradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
-    exampleQuery: "detect objects in image.jpg",
-    mockResponse: "Detected: person (95%), car (87%), tree (76%)"
-  },
-  {
-    id: "sentiment-api",
-    name: "Sentiment Analysis API",
-    letter: "A",
-    price: "$24.99",
-    category: "Batch",
-    requests: "10K/mo",
-    description: "Analyze text sentiment and emotions using advanced NLP. Perfect for social media monitoring and customer feedback.",
-    bgGradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
-    exampleQuery: "analyze sentiment: 'This product is amazing!'",
-    mockResponse: "Sentiment: Positive (98% confidence), Emotion: Joy"
+    id: "financial-times",
+    name: "Financial Times",
+    subtitle: "Premium Financial Brief",
+    logo: "https://www.ft.com/__origami/service/image/v2/images/raw/ftlogo-v1%3Abrand-ft-logo-square-coloured?source=update-logos",
+    price: "$9.99",
+    category: "News",
+    requests: "10/mo",
+    description: "Watch sponsored content to unlock premium articles and curated global market analysis.",
+    bgGradient: "linear-gradient(135deg, #FFF1E5 0%, #FFE5CC 100%)",
+    exampleQuery: "latest global market brief",
+    mockResponse: "📰 FT Brief: Global markets rally on Fed signals. Tech stocks lead gains. Full analysis unlocked."
   }
 ];
 

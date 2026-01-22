@@ -62,7 +62,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <img src="/adscronos2_transparent_embedded.svg" alt="X402 Logo" className="h-10 w-auto" />
+            <img src="/adscronos2_transparent_embedded.svg" alt="X402 Logo" className="h-14 w-auto" />
             <div className="text-left">
               <div className="text-xl font-bold text-white">Adscronos</div>
               <div className="text-xs text-slate-400">Smart Advertising & Monetization</div>
