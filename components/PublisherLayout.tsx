@@ -96,7 +96,7 @@ export default function PublisherLayout({
               <span className="text-xs font-bold text-white">X4</span>
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold text-white">X402 Ad Platform</div>
+              <div className="text-sm font-bold text-white">Adscronos</div>
               <div className="text-xs text-slate-400">Publisher Portal</div>
             </div>
           </Link>

@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: X402 Ad Platform ChatGPT Plugin
+  title: Adscronos ChatGPT Plugin
   description: Access premium content through ad-supported paywall system
   version: 'v1'
 servers:

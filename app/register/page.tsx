@@ -149,11 +149,9 @@ export default function RegisterPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500">
-              <span className="text-sm font-bold text-white">X4</span>
-            </div>
+            <img src="/adscronos2_transparent_embedded.svg" alt="X402 Logo" className="h-10 w-auto" />
             <div className="text-left">
-              <div className="text-xl font-bold text-white">X402 Ad Platform</div>
+              <div className="text-xl font-bold text-white">Adscronos</div>
               <div className="text-xs text-slate-400">Smart Advertising & Monetization</div>
             </div>
           </Link>

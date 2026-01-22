@@ -1,6 +1,6 @@
-# X402 Ad Platform - E2E Testing Suite
+# Adscronos - E2E Testing Suite
 
-This directory contains comprehensive end-to-end tests for the X402 Ad Platform using Playwright.
+This directory contains comprehensive end-to-end tests for the Adscronos using Playwright.
 
 ## 📋 Test Coverage
 

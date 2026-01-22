@@ -13,7 +13,7 @@ test.describe('Authentication Flows', () => {
       await helpers.navigateTo('/');
       
       // Check page title
-      await expect(page).toHaveTitle(/X402 Ad Platform/);
+      await expect(page).toHaveTitle(/Adscronos/);
       
       // Check main heading
       await expect(page.locator('h1')).toContainText('Next-Generation Ad Platform');

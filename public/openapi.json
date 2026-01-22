@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "X402 Ad Platform API (Demo)",
+    "title": "Adscronos API (Demo)",
     "version": "0.1.0",
     "description": "Demo endpoints for registering advertisers/publishers and recording ad events."
   },

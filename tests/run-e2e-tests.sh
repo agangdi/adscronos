@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# X402 Ad Platform E2E Test Runner
+# Adscronos E2E Test Runner
 # This script sets up the environment and runs comprehensive E2E tests
 
 set -e
 
-echo "🚀 Starting X402 Ad Platform E2E Tests"
+echo "🚀 Starting Adscronos E2E Tests"
 echo "======================================="
 
 # Colors for output

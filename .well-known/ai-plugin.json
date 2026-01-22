@@ -1,6 +1,6 @@
 {
   "schema_version": "v1",
-  "name_for_human": "X402 Ad Platform",
+  "name_for_human": "Adscronos",
   "name_for_model": "x402_ad_platform",
   "description_for_human": "Access premium content through our ad-supported platform. View ads to unlock exclusive resources, tools, and information.",
   "description_for_model": "A platform that provides access to premium content through an ad-based paywall system. Users can access exclusive resources by viewing advertisements, with automatic billing and content delivery.",

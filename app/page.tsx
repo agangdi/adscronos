@@ -6,11 +6,9 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500">
-                <span className="text-sm font-bold text-white">X4</span>
-              </div>
+              <img src="/adscronos2_transparent_embedded.svg" alt="X402 Logo" className="h-10 w-auto" />
               <div>
-                <h1 className="text-xl font-bold text-white">X402 Ad Platform</h1>
+                <h1 className="text-xl font-bold text-white">Adscronos</h1>
                 <p className="text-xs text-slate-400">Smart Advertising & Monetization Platform</p>
               </div>
             </div>
@@ -311,11 +309,9 @@ export default function Home() {
           <div className="grid gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500">
-                  <span className="text-sm font-bold text-white">X4</span>
-                </div>
+                <img src="/adscronos2_transparent_embedded.svg" alt="X402 Logo" className="h-8 w-auto" />
                 <div>
-                  <div className="font-bold text-white">X402 Ad Platform</div>
+                  <div className="font-bold text-white">Adscronos</div>
                   <div className="text-xs text-slate-400">Smart Advertising & Monetization Platform</div>
                 </div>
               </div>
@@ -346,7 +342,7 @@ export default function Home() {
           </div>
           
           <div className="mt-8 border-t border-slate-800/50 pt-8 text-center text-sm text-slate-400">
-            © 2024 X402 Ad Platform. All rights reserved.
+            © 2024 Adscronos. All rights reserved.
           </div>
         </div>
       </footer>

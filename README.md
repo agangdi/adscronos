@@ -1,4 +1,4 @@
-# X402 Ad Platform + ChatGPT Tool Paywall (Demo)
+# Adscronos + ChatGPT Tool Paywall (Demo)
 
 Lightweight in-house ad platform: advertisers register creatives; publishers inject a JS SDK to trigger ads; events are recorded on play/skip and can notify hooks; ChatGPT tools can show an ad before paid content, then auto-pay/unlock after completion.
 

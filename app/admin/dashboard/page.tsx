@@ -190,7 +190,7 @@ export default async function AdminDashboard() {
       <div className="mx-auto flex max-w-7xl flex-col gap-8">
         {/* Header */}
         <header className="flex flex-col gap-2">
-          <div className="text-sm text-slate-400">Admin Dashboard · X402 Ad Platform</div>
+          <div className="text-sm text-slate-400">Admin Dashboard · Adscronos</div>
           <h1 className="text-3xl font-semibold">Platform Overview & Management</h1>
           <p className="text-sm text-slate-400">Monitor platform-wide analytics, users, and system health.</p>
         </header>

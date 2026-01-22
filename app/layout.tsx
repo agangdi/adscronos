@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "X402 Ad Platform · ChatGPT Tool Paywall Demo",
+  title: "Adscronos · ChatGPT Tool Paywall Demo",
   description:
     "Self-hosted ad platform with JS SDK, event hooks, and ChatGPT tool paywall flow.",
 };

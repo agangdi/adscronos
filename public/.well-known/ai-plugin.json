@@ -1,6 +1,6 @@
 {
   "schema_version": "v1",
-  "name_for_human": "X402 Ad Platform",
+  "name_for_human": "Adscronos",
   "name_for_model": "x402_ads",
   "description_for_human": "Demo ad platform with JS SDK and ad-complete paywall flow for ChatGPT tools.",
   "description_for_model": "Register advertisers and publishers, embed a JS SDK to trigger ads, record events, and unlock paywalled resources after ad completion.",
