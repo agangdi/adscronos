@@ -92,11 +92,12 @@ export default function AdvertiserLayout({
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-slate-800">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500">
-              <span className="text-xs font-bold text-white">X4</span>
-            </div>
+            <img 
+              src="/adscronos2_transparent_embedded.svg" 
+              alt="Adscronos Logo" 
+              className="h-10 w-auto"
+            />
             <div className="text-left">
-              <div className="text-sm font-bold text-white">X402</div>
               <div className="text-xs text-slate-400">Advertiser Portal</div>
             </div>
           </Link>
