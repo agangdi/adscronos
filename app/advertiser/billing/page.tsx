@@ -160,6 +160,71 @@ export default function BillingPage() {
               </div>
             </div>
 
+            
+
+            {/* Cronos X402 Blockchain Payment */}
+            <div className="rounded-lg border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-blue-500/20 p-2">
+                    <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.64v8.55c0 4.55-3.08 8.81-8 9.91-4.92-1.1-8-5.36-8-9.91V7.82l8-3.64z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">Cronos X402 Blockchain Payment</h2>
+                    <p className="text-sm text-slate-400">Decentralized payment processing with TCRO</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg border border-blue-500/20 bg-slate-900/50">
+                  <div className="flex items-start gap-3 mb-3">
+                    <svg className="w-5 h-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="flex-1">
+                      <h3 className="text-white font-medium mb-1">How X402 Payments Work</h3>
+                      <p className="text-sm text-slate-400 mb-2">
+                        Our platform uses Cronos X402 protocol for secure, transparent blockchain-based payments. Each transaction is processed using TCRO (Test Cronos) cryptocurrency.
+                      </p>
+                      <ul className="text-sm text-slate-400 space-y-1">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-400 mt-1">•</span>
+                          <span><strong className="text-slate-300">Fast Transactions:</strong> Blockchain-verified payments in seconds</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-400 mt-1">•</span>
+                          <span><strong className="text-slate-300">Low Fees:</strong> Minimal transaction costs (0.1 TCRO per request)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-400 mt-1">•</span>
+                          <span><strong className="text-slate-300">Transparent:</strong> All transactions recorded on Cronos blockchain</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-400 mt-1">•</span>
+                          <span><strong className="text-slate-300">Secure:</strong> Decentralized payment processing with wallet authentication</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg border border-slate-700 bg-slate-800/50">
+                    <div className="text-sm text-slate-400 mb-1">Payment Protocol</div>
+                    <div className="text-white font-medium">Cronos X402</div>
+                  </div>
+                  <div className="p-4 rounded-lg border border-slate-700 bg-slate-800/50">
+                    <div className="text-sm text-slate-400 mb-1">Currency</div>
+                    <div className="text-white font-medium">TCRO (Test Cronos)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Payment History */}
             <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-6">
               <div className="flex items-center justify-between mb-6">

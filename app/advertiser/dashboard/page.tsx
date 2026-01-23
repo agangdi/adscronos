@@ -1,99 +1,46 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import AdvertiserLayout from "@/components/AdvertiserLayout";
+import {
+  getMockAdvertiserData,
+  getMockCampaignStats,
+  getMockCreativeStats,
+  getMockCampaignPerformance,
+  MOCK_DAILY_METRICS,
+  MOCK_BILLING_RECORDS,
+} from "@/lib/mock-advertiser-data";
 
-async function getAdvertiserData() {
-  const advertiser = await prisma.advertiser.findFirst({
-    orderBy: { createdAt: "asc" },
-    include: {
-      campaigns: {
-        include: {
-          creatives: true,
-        },
-      },
-      creatives: true,
-      billings: {
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      },
-    },
-  });
-
-  if (!advertiser) return null;
-
-  // Get performance metrics from rollup data
-  const performanceMetrics = await prisma.adEventRollupDaily.aggregate({
-    where: {
-      campaignId: {
-        in: advertiser.campaigns.map(c => c.id),
-      },
-    },
-    _sum: {
-      impressions: true,
-      clicks: true,
-      completes: true,
-      spendCents: true,
-    },
-  });
-
-  // Get recent analytics data (last 30 days)
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  const analyticsData = await prisma.adEventRollupDaily.findMany({
-    where: {
-      campaignId: {
-        in: advertiser.campaigns.map(c => c.id),
-      },
-      date: {
-        gte: thirtyDaysAgo,
-      },
-    },
-    orderBy: { date: "asc" },
-    select: {
-      date: true,
-      impressions: true,
-      clicks: true,
-      spendCents: true,
-    },
-  });
-
-  // Get campaign status breakdown
-  const campaignStats = await prisma.campaign.groupBy({
-    by: ["status"],
-    where: { advertiserId: advertiser.id },
-    _count: true,
-  });
-
-  // Get creative status breakdown
-  const creativeStats = await prisma.creative.groupBy({
-    by: ["status"],
-    where: { advertiserId: advertiser.id },
-    _count: true,
-  });
-
-  // Get campaign performance data for the campaigns table
-  const campaignPerformance = await Promise.all(
-    advertiser.campaigns.map(async (campaign) => {
-      const rollupData = await prisma.adEventRollupDaily.aggregate({
-        where: { campaignId: campaign.id },
-        _sum: {
-          impressions: true,
-          clicks: true,
-          spendCents: true,
-        },
-      });
-      
-      return {
-        ...campaign,
-        performance: rollupData._sum,
-      };
-    })
-  );
-
+function getAdvertiserData() {
+  const mockData = getMockAdvertiserData();
+  const campaignStats = getMockCampaignStats();
+  const creativeStats = getMockCreativeStats();
+  const campaignPerformance = getMockCampaignPerformance();
+  
+  // Get last 30 days of analytics
+  const analyticsData = MOCK_DAILY_METRICS.slice(-30).map(day => ({
+    date: new Date(day.date),
+    impressions: day.impressions,
+    clicks: day.clicks,
+    spendCents: day.spendCents,
+  }));
+  
+  // Get recent billing records
+  const billings = MOCK_BILLING_RECORDS.slice(0, 5);
+  
   return {
-    advertiser,
-    performanceMetrics,
+    advertiser: {
+      id: 'adv-001',
+      name: 'Demo Advertiser',
+      campaigns: mockData.campaigns,
+      creatives: mockData.creatives,
+      billings,
+    },
+    performanceMetrics: {
+      _sum: {
+        impressions: mockData.totalImpressions,
+        clicks: mockData.totalClicks,
+        spendCents: mockData.totalSpendCents,
+      },
+    },
     analyticsData,
     campaignStats,
     creativeStats,
@@ -101,15 +48,8 @@ async function getAdvertiserData() {
   };
 }
 
-export default async function AdvertiserDashboard() {
-  const data = await getAdvertiserData();
-  if (!data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
-        <p>No advertiser found. Register via /api/auth/advertiser/register.</p>
-      </div>
-    );
-  }
+export default function AdvertiserDashboard() {
+  const data = getAdvertiserData();
 
   const { advertiser, performanceMetrics, analyticsData, campaignStats, creativeStats, campaignPerformance } = data;
   

@@ -33,10 +33,16 @@ export default function Home() {
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
             {/* Left Content */}
             <div className="flex flex-col justify-center">
-              <div className="mb-6">
+              <div className="mb-6 flex flex-wrap gap-2">
                 <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-400">
                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
                   ChatGPT Tool Integration Support
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs text-blue-400">
+                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                  </svg>
+                  Powered by Cronos X402
                 </div>
               </div>
               
@@ -48,10 +54,23 @@ export default function Home() {
                 </span>
               </h1>
               
-              <p className="mb-8 text-lg text-slate-300 leading-relaxed">
+              <p className="mb-6 text-lg text-slate-300 leading-relaxed">
                 Provide multimedia advertising services for advertisers and flexible monetization solutions for publishers.
                 Support web, video, image, text ad formats, and ChatGPT tool integration for premium content unlocking.
               </p>
+
+              <div className="mb-8 p-4 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10">
+                <div className="flex items-center gap-3 mb-2">
+                  <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.64v8.55c0 4.55-3.08 8.81-8 9.91-4.92-1.1-8-5.36-8-9.91V7.82l8-3.64z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <h3 className="text-lg font-semibold text-white">Enhanced with Cronos X402 Blockchain Payments</h3>
+                </div>
+                <p className="text-sm text-slate-300">
+                  Utilizing <span className="font-semibold text-blue-400">Cronos X402 protocol</span> for secure, convenient, flexible, and stable payment processing with TCRO cryptocurrency. Low fees and transparent blockchain transactions.
+                </p>
+              </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900/50 p-4">
@@ -199,6 +218,18 @@ export default function Home() {
               <h3 className="mb-2 text-lg font-semibold text-white">Secure & Reliable</h3>
               <p className="text-slate-400">Enterprise-grade security with API key authentication and encrypted data transmission</p>
             </div>
+
+            {/* Feature 7 - Cronos X402 */}
+            <div className="rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-6 hover:from-blue-500/20 hover:to-purple-500/20 transition-colors">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/20">
+                <svg className="h-6 w-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.64v8.55c0 4.55-3.08 8.81-8 9.91-4.92-1.1-8-5.36-8-9.91V7.82l8-3.64z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-white">Cronos X402 Blockchain Payments</h3>
+              <p className="text-slate-400">Decentralized payment processing with TCRO cryptocurrency for fast, secure, and transparent transactions</p>
+            </div>
           </div>
         </div>
       </section>
@@ -315,9 +346,15 @@ export default function Home() {
                   <div className="text-xs text-slate-400">Smart Advertising & Monetization Platform</div>
                 </div>
               </div>
-              <p className="text-sm text-slate-400 max-w-md">
+              <p className="text-sm text-slate-400 max-w-md mb-3">
                 Professional advertising platform solutions providing efficient, secure, and easy-to-use advertising and monetization services for advertisers and publishers.
               </p>
+              <div className="inline-flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 px-3 py-1.5 text-xs text-blue-400">
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                </svg>
+                <span>Secured by Cronos X402 Blockchain</span>
+              </div>
             </div>
             
             <div>
