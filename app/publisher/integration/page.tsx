@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import PublisherLayout from "@/components/PublisherLayout";
+import CopyButton from "@/components/CopyButton";
 
 async function getPublisherIntegration() {
   const publisher = await prisma.publisher.findFirst({
@@ -58,12 +59,7 @@ export default async function PublisherIntegration() {
             <pre className="text-slate-300 whitespace-pre-wrap">{integrationCode}</pre>
           </div>
           <div className="mt-4 flex gap-3">
-            <button 
-              onClick={() => navigator.clipboard.writeText(integrationCode)}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
-            >
-              Copy Code
-            </button>
+            <CopyButton text={integrationCode} label="Copy Code" />
             <button className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 transition-colors">
               Download SDK
             </button>
@@ -85,12 +81,11 @@ export default async function PublisherIntegration() {
                       <div className="font-medium text-slate-200">{adUnit.key}</div>
                       <div className="text-sm text-slate-400">{adUnit.adType}</div>
                     </div>
-                    <button 
-                      onClick={() => navigator.clipboard.writeText(adUnitCode(adUnit.key))}
+                    <CopyButton 
+                      text={adUnitCode(adUnit.key)}
+                      label="Copy"
                       className="text-emerald-400 hover:text-emerald-300 text-sm"
-                    >
-                      Copy
-                    </button>
+                    />
                   </div>
                   <div className="rounded bg-slate-900 p-3 font-mono text-xs">
                     <pre className="text-slate-300 whitespace-pre-wrap">{adUnitCode(adUnit.key)}</pre>

@@ -1,24 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function RegisterPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-6 py-12">
-          <div className="text-slate-200">Loading…</div>
-        </div>
-      }
-    >
-      <RegisterPageInner />
-    </Suspense>
-  );
-}
-
-function RegisterPageInner() {
+export default function RegisterForm() {
   const searchParams = useSearchParams();
   const [userType, setUserType] = useState<"advertiser" | "publisher">("advertiser");
   const [form, setForm] = useState({
@@ -37,7 +23,6 @@ function RegisterPageInner() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Set user type from URL params
   useEffect(() => {
     const type = searchParams.get("type");
     if (type === "advertiser" || type === "publisher") {
@@ -45,7 +30,6 @@ function RegisterPageInner() {
     }
   }, [searchParams]);
 
-  // Password validation function
   const validatePassword = (password: string): string[] => {
     const errors = [];
     if (password.length < 8) {
@@ -69,26 +53,21 @@ function RegisterPageInner() {
     setResult("");
     setErrors({});
 
-    // Frontend validation
     const newErrors: {[key: string]: string[]} = {};
     
-    // Password validation
     const passwordErrors = validatePassword(form.password);
     if (passwordErrors.length > 0) {
       newErrors.password = passwordErrors;
     }
 
-    // Confirm password validation
     if (form.password !== form.confirmPassword) {
       newErrors.confirmPassword = ["Passwords do not match"];
     }
 
-    // Email validation
     if (!form.authEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.authEmail)) {
       newErrors.authEmail = ["Please enter a valid email address"];
     }
 
-    // User type specific validation
     if (userType === "advertiser") {
       if (!form.name.trim()) {
         newErrors.name = ["Company name is required"];
@@ -135,7 +114,6 @@ function RegisterPageInner() {
 
       const json = await res.json();
       if (!res.ok) {
-        // Handle API validation errors
         if (json.error && typeof json.error === 'object' && json.error.fieldErrors) {
           setErrors(json.error.fieldErrors);
           setResult("Please fix the errors below");
@@ -144,7 +122,6 @@ function RegisterPageInner() {
         }
       } else {
         setResult("Registration successful! Redirecting to dashboard...");
-        // Redirect to appropriate dashboard
         const dashboardUrl = userType === "advertiser" ? "/advertiser/dashboard" : "/publisher/dashboard";
         setTimeout(() => {
           window.location.href = dashboardUrl;
@@ -160,7 +137,6 @@ function RegisterPageInner() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
             <img src="/adscronos2_transparent_embedded.svg" alt="X402 Logo" className="h-14 w-auto" />
@@ -174,9 +150,7 @@ function RegisterPageInner() {
           <p className="text-slate-400">Join thousands of advertisers and publishers</p>
         </div>
 
-        {/* Registration Form */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-lg shadow-slate-900/40">
-          {/* User Type Toggle */}
           <div className="mb-6">
             <div className="inline-flex w-full rounded-full border border-slate-800 bg-slate-900/80 text-sm text-slate-200">
               <button
@@ -205,7 +179,6 @@ function RegisterPageInner() {
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Advertiser Fields */}
             {userType === "advertiser" && (
               <>
                 <div>
@@ -222,7 +195,6 @@ function RegisterPageInner() {
                     value={form.name}
                     onChange={(e) => {
                       setForm(f => ({ ...f, name: e.target.value }));
-                      // Clear error when user starts typing
                       if (errors.name) {
                         setErrors(prev => ({ ...prev, name: [] }));
                       }
@@ -279,7 +251,6 @@ function RegisterPageInner() {
               </>
             )}
 
-            {/* Publisher Fields */}
             {userType === "publisher" && (
               <>
                 <div>
@@ -340,7 +311,6 @@ function RegisterPageInner() {
               </>
             )}
 
-            {/* Common Fields */}
             <div>
               <label className="block text-sm text-slate-200 mb-2">
                 Email Address *
@@ -417,7 +387,6 @@ function RegisterPageInner() {
                   {errors.password[0]}
                 </div>
               )}
-              {/* Password strength indicator */}
               {form.password && (
                 <div className="mt-2">
                   <div className="text-xs text-slate-400 mb-1">Password strength:</div>
@@ -501,7 +470,6 @@ function RegisterPageInner() {
                   {errors.confirmPassword[0]}
                 </div>
               )}
-              {/* Password match indicator */}
               {form.confirmPassword && (
                 <div className={`mt-1 text-xs ${
                   form.password === form.confirmPassword ? "text-emerald-400" : "text-red-400"
@@ -548,7 +516,6 @@ function RegisterPageInner() {
             </div>
           )}
 
-          {/* Display field errors */}
           {Object.keys(errors).length > 0 && (
             <div className="mt-4 p-3 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20">
               <div className="font-medium mb-2">Please fix the following errors:</div>
@@ -575,7 +542,6 @@ function RegisterPageInner() {
           </div>
         </div>
 
-        {/* Back to Home */}
         <div className="mt-6 text-center">
           <Link 
             href="/"

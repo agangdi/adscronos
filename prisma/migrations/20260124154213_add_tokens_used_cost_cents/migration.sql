@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ChatGPTToken" ADD COLUMN     "costCents" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "tokensUsed" INTEGER NOT NULL DEFAULT 0;
