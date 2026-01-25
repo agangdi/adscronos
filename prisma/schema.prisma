@@ -366,6 +366,8 @@ model ChatGPTToken {
   token        String     @unique
   usageCount   Int        @default(0)
   maxUsage     Int?
+  tokensUsed   Int        @default(0)
+  costCents    Int        @default(0)
   expiresAt    DateTime?
   isActive     Boolean    @default(true)
   metadata     Json?      // Store additional token info
