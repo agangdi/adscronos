@@ -1,10 +1,10 @@
 module.exports = {
   apps: [
     {
-      name: 'x402-web',
+      name: 'adscronos',
       script: 'npm',
       args: 'start',
-      cwd: '/data/adscronos',
+      cwd: '/data/adscronos/',
       instances: 1,
       autorestart: true,
       watch: false,
@@ -13,8 +13,8 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3000
       },
-      error_file: './logs/web-error.log',
-      out_file: './logs/web-out.log',
+      error_file: './logs/adscronos-error.log',
+      out_file: './logs/adscronos-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true
     }

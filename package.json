@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3000",
     "lint": "eslint",
     "create": "npx prisma migrate dev --create-only --name",
     "migrate": "npx prisma migrate deploy && npx prisma generate",
