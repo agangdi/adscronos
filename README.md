@@ -2,6 +2,36 @@
 
 Lightweight in-house ad platform: advertisers register creatives; publishers inject a JS SDK to trigger ads; events are recorded on play/skip and can notify hooks; ChatGPT tools can show an ad before paid content, then auto-pay/unlock after completion.
 
+---
+
+## 🎯 The Story
+
+### The Problem
+AI assistants like ChatGPT are revolutionizing how we access information and services. But there's a fundamental challenge: **how do content creators and service providers monetize their offerings in an AI-first world?** Traditional paywalls break the conversational flow. Subscription fatigue is real. We needed a better way.
+
+### The "Aha!" Moment
+What if AI tools could show a quick ad before delivering premium content—just like YouTube does for videos? Users get instant access without subscriptions, creators get paid, and advertisers reach engaged audiences. It's a win-win-win that preserves the seamless AI experience.
+
+### What We Built
+**Adscronos** is a lightweight ad platform designed specifically for the AI era. We created:
+
+- 🎬 **Ad SDK** that works seamlessly with ChatGPT tools and web publishers
+- 💰 **Micropayment system** where ad views automatically unlock premium content
+- 📊 **Full analytics pipeline** tracking impressions, completions, skips, and clicks
+- 🔗 **Webhook infrastructure** for real-time event notifications and settlements
+- 🎨 **Dual dashboards** for advertisers to manage campaigns and publishers to track revenue
+
+### The Vision
+We're building the infrastructure for **attention-based micropayments in the AI age**. Imagine:
+- A ChatGPT tool that shows a 5-second ad before generating a premium report
+- AI assistants that unlock paywalled articles after users watch relevant ads
+- Content creators earning revenue without forcing subscriptions
+- Advertisers reaching users at the exact moment they need something
+
+This is just the beginning. The future of content monetization isn't behind paywalls—it's integrated into the experience itself.
+
+---
+
 ## Quick start
 
 ```bash
