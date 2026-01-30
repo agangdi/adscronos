@@ -30,6 +30,54 @@ We're building the infrastructure for **attention-based micropayments in the AI 
 
 This is just the beginning. The future of content monetization isn't behind paywalls—it's integrated into the experience itself.
 
+### Why This Matters
+
+**For Content Creators & Publishers:**
+- 📈 **New revenue stream** without alienating users with hard paywalls
+- 🌍 **Global reach** - anyone can access your content, anywhere
+- 🤖 **AI-native** - your content works seamlessly with AI assistants
+- 💡 **Micropayments at scale** - earn from every interaction, not just subscribers
+
+**For Users:**
+- 🆓 **Instant access** to premium content without credit cards or subscriptions
+- ⚡ **Frictionless experience** - watch a quick ad, get what you need
+- 🎯 **Relevant ads** - see promotions that actually match your interests
+- 🔓 **No commitment** - pay-per-use model, no monthly fees
+
+**For Advertisers:**
+- 🎪 **Engaged audiences** - reach users at the moment they're seeking information
+- 📊 **Transparent metrics** - track every impression, completion, and conversion
+- 🎬 **Multiple formats** - video, display, interactive ads
+- 💰 **Performance-based** - pay only for completed views and real engagement
+
+**The Bigger Picture:**
+As AI becomes the primary interface for information access, traditional monetization models break down. We're not just building an ad platform—we're creating the economic infrastructure that makes free, AI-powered information access sustainable for everyone.
+
+### What's Next
+
+**Immediate Roadmap (Post-Hackathon):**
+- 🔐 **Enhanced security** - webhook signing, fraud detection, and rate limiting
+- 🎨 **Creative studio** - drag-and-drop ad builder with templates
+- 📱 **Mobile SDK** - native iOS/Android support for mobile apps
+- 🧪 **A/B testing** - optimize ad performance with built-in experimentation
+- 📈 **Advanced analytics** - conversion tracking, attribution, and ROI dashboards
+
+**Medium-Term Goals:**
+- 🤝 **ChatGPT Plugin Marketplace** - official integration with OpenAI's ecosystem
+- 🌐 **Multi-AI support** - Claude, Gemini, and other AI assistants
+- 💱 **Crypto payments** - blockchain-based micropayments for global reach
+- 🎯 **Smart targeting** - ML-powered ad matching based on context and intent
+- 🔄 **Programmatic bidding** - real-time ad auctions for premium placements
+
+**Long-Term Vision:**
+- 🌟 **The standard for AI monetization** - become the Stripe of attention-based payments
+- 🏗️ **Open protocol** - create industry standards for AI-native advertising
+- 🌍 **Global marketplace** - connect millions of creators, advertisers, and users
+- 🚀 **Beyond ads** - enable any form of micropayment (tips, subscriptions, pay-per-query)
+
+**Join Us:**
+This is more than a hackathon project—it's the foundation of how content will be monetized in an AI-first world. We're looking for partners, early adopters, and believers in a future where information is both free and sustainable.
+
 ---
 
 ## Quick start
